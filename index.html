@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trip Weather</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌦️</text></svg>">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>🌦️ Trip Weather</h1>
+    <button type="button" id="share-btn" class="ghost" hidden>Share trip</button>
+  </header>
+
+  <main class="layout">
+    <section class="form-area">
+      <form id="trip-form" autocomplete="off">
+        <div class="field place" id="from-field">
+          <label for="from-input">Start</label>
+          <div class="input-row">
+            <input id="from-input" type="text" placeholder="City or address">
+            <button type="button" id="locate-btn" class="icon" title="Use my location" aria-label="Use my location">📍</button>
+          </div>
+          <ul class="suggestions" hidden></ul>
+        </div>
+
+        <div id="stops"></div>
+        <button type="button" id="add-stop" class="ghost small">+ Add a stop</button>
+
+        <div class="field place" id="to-field">
+          <label for="to-input">Destination</label>
+          <div class="input-row">
+            <input id="to-input" type="text" placeholder="City or address">
+          </div>
+          <ul class="suggestions" hidden></ul>
+        </div>
+
+        <div class="row">
+          <div class="field grow">
+            <label for="depart-input">Leaving</label>
+            <input id="depart-input" type="datetime-local" required>
+          </div>
+          <div class="field">
+            <label for="interval-select">Check every</label>
+            <select id="interval-select">
+              <option value="30">30 min</option>
+              <option value="60" selected>1 hour</option>
+              <option value="120">2 hours</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row between">
+          <div class="units" role="group" aria-label="Units">
+            <button type="button" class="seg active" data-units="f">°F</button>
+            <button type="button" class="seg" data-units="c">°C</button>
+          </div>
+          <button type="submit" id="go-btn" class="primary">Check weather</button>
+        </div>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="map-area"><div id="map"></div></section>
+
+    <section class="results-area">
+      <div id="summary" class="summary" hidden></div>
+      <div id="timeline" class="timeline"></div>
+    </section>
+  </main>
+
+  <footer class="credits">
+    Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a> (CC BY 4.0) ·
+    Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors ·
+    Routing by <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> ·
+    Search by <a href="https://photon.komoot.io/" target="_blank" rel="noopener">Photon</a>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
