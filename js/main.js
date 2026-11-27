@@ -184,7 +184,7 @@ $('#locate-btn').addEventListener('click', () => {
 shareBtn.addEventListener('click', async () => {
   const url = location.href;
   try {
-    if (navigator.share) { await navigator.share({ title: 'Trip weather', url }); return; }
+    if (navigator.share) { await navigator.share({ title: 'Weather Mapper', url }); return; }
     await navigator.clipboard.writeText(url);
     setStatus('Link copied. Send it to anyone and it opens this trip.');
   } catch (e) {

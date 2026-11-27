@@ -1,18 +1,12 @@
-# Trip Weather
+# Weather Mapper
 
 Shows the weather along a driving route at the time you'll actually be at each point.
 It's a static site, so it runs on GitHub Pages with no server, accounts, API keys or card.
 
 ## Put it on GitHub Pages
-
-**Option A: its own repo** (address will be `https://<you>.github.io/trip-weather/`)
-1. Create a new repo called `trip-weather` and push the contents of this folder to it.
-2. In the repo, go to **Settings → Pages**, set **Source** to "Deploy from a branch",
-   choose `main` and `/ (root)`, and save.
-3. Wait a minute, then open the address.
-
-**Option B: inside your existing `<you>.github.io` repo**
-Copy this folder in as `trip-weather/` and push. It'll be at `https://<you>.github.io/trip-weather/`.
+This repo (`jk1834/WeatherMapper`) is served at **https://jk1834.github.io/WeatherMapper/**.
+If Pages ever needs turning back on: **Settings → Pages**, set **Source** to "Deploy from a branch",
+choose `main` and `/ (root)`, and save. Changes show up a minute or so after you push.
 
 ## Using it
 - Type a start and a destination (pick from the suggestions, or just type and press **Check weather**).
