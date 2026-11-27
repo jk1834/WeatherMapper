@@ -28,23 +28,20 @@ body {
 }
 .topbar h1 { font-size: 18px; margin: 0; }
 
-/* ---- Layout: stacked on phones, sidebar + map on wider screens ---- */
+/* ---- Layout: form above the map on phones, form beside the map on wider screens ---- */
 .layout { display: grid; grid-template-columns: minmax(0, 1fr); }
 .layout > * { min-width: 0; }
-.form-area, .results-area { padding: 12px 16px; }
-.map-area { height: 50vh; min-height: 300px; }
+.form-area { padding: 12px 16px; }
+.map-area { height: 70vh; min-height: 360px; }
 #map { height: 100%; width: 100%; }
 
 @media (min-width: 900px) {
   .layout {
     grid-template-columns: 400px minmax(0, 1fr);
-    grid-template-rows: auto 1fr;
-    grid-template-areas: "form map" "results map";
     height: calc(100vh - 49px - 34px);
   }
-  .form-area { grid-area: form; border-right: 1px solid var(--line); background: var(--card); }
-  .results-area { grid-area: results; overflow-y: auto; border-right: 1px solid var(--line); }
-  .map-area { grid-area: map; height: auto; }
+  .form-area { border-right: 1px solid var(--line); background: var(--card); overflow-y: auto; }
+  .map-area { height: auto; }
 }
 
 /* ---- Form ---- */
@@ -71,6 +68,7 @@ button.primary:disabled { opacity: .6; cursor: wait; }
 button.ghost { background: transparent; border-color: var(--line); padding: 7px 12px; color: var(--text); }
 button.ghost.small { font-size: 13px; padding: 5px 10px; margin-bottom: 10px; }
 button.icon { background: transparent; border-color: var(--line); padding: 7px 9px; line-height: 1; }
+button.locate { white-space: nowrap; }
 
 .units { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .units .seg { border-radius: 0; background: #fff; padding: 7px 12px; }
@@ -88,51 +86,6 @@ button.icon { background: transparent; border-color: var(--line); padding: 7px 9
 
 .status { min-height: 1.4em; margin: 8px 0 0; color: var(--muted); font-size: 14px; }
 .status.error { color: var(--bad); }
-
-/* ---- Summary ---- */
-.summary { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; }
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.stats small { display: block; color: var(--muted); font-size: 12px; }
-.stats b { font-size: 15px; }
-.headline { margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; font-weight: 600; }
-.headline.warn { background: var(--warn-bg); color: var(--warn); }
-.headline.ok { background: var(--ok-bg); color: var(--ok); }
-.note { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
-
-/* ---- Timeline ---- */
-.day {
-  display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline;
-  margin: 14px 0 6px; font-weight: 700;
-}
-.conf { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; }
-.conf.good { background: var(--ok-bg); color: var(--ok); }
-.conf.fair { background: var(--warn-bg); color: var(--warn); }
-.conf.low { background: #e5e7eb; color: #374151; }
-
-.stop-row {
-  display: grid; grid-template-columns: 70px 1fr auto; gap: 10px; align-items: center;
-  width: 100%; text-align: left; background: var(--card); color: var(--text);
-  border: 1px solid var(--line); border-left: 4px solid var(--line);
-  border-radius: var(--radius); padding: 10px; margin-bottom: 6px;
-}
-.stop-row.start, .stop-row.end { border-left-color: var(--accent); }
-.stop-row.stop, .stop-row.leave { border-left-color: #7c3aed; }
-.stop-row.warn { background: #fffbeb; }
-.stop-row.bad { background: #fef2f2; }
-.stop-row.selected { outline: 2px solid var(--accent); }
-.when b { display: block; font-size: 15px; }
-.when small { color: var(--muted); font-size: 12px; }
-.place { font-weight: 500; }
-.stop-row.route .place { color: var(--muted); font-weight: 400; }
-.chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-.chip { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 99px; }
-.chip.warn { background: var(--warn-bg); color: var(--warn); }
-.chip.bad { background: var(--bad-bg); color: var(--bad); }
-.wx { text-align: right; }
-.wx-main { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
-.wx-icon { font-size: 22px; }
-.wx-temp { font-size: 17px; font-weight: 700; }
-.wx-sub { font-size: 12px; color: var(--muted); white-space: nowrap; }
 
 /* ---- Map pins ---- */
 .wx-pin-wrap { background: none; border: none; }

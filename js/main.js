@@ -1,4 +1,4 @@
-// Wires the form, map and timeline together.
+// Wires the form and the map together.
 import { CONFIG } from './config.js';
 import { h } from './dom.js';
 import { placeNameAt } from './geocode.js';
@@ -6,7 +6,6 @@ import { MapView } from './mapView.js';
 import { PlaceField } from './placeField.js';
 import { getRoute } from './routing.js';
 import { planSamples } from './sampling.js';
-import { TimelineView } from './timelineView.js';
 import { decodeTrip, encodeTrip } from './tripUrl.js';
 import { getWeather } from './weather.js';
 
@@ -15,7 +14,6 @@ const $ = (sel) => document.querySelector(sel);
 const state = { units: 'f', plan: null, weather: null, runId: 0 };
 
 const mapView = new MapView($('#map'));
-const timeline = new TimelineView($('#timeline'), $('#summary'));
 const getBias = () => fromField.place || mapView.center();
 const fromField = new PlaceField($('#from-field'), { getBias: () => mapView.center() });
 const toField = new PlaceField($('#to-field'), { getBias });
@@ -84,14 +82,8 @@ document.querySelectorAll('.units .seg').forEach((b) => b.addEventListener('clic
 }));
 
 // ---- Run ----
-function select(i) {
-  mapView.focus(i);
-  timeline.highlight(i);
-}
-
 function renderResults() {
-  mapView.showSamples(state.plan.samples, state.weather, state.units, select);
-  timeline.render(state.plan, state.weather, state.units, select);
+  mapView.showSamples(state.plan.samples, state.weather, state.units, (i) => mapView.focus(i));
 }
 
 function currentTrip() {
@@ -108,20 +100,6 @@ function currentTrip() {
 function updateUrl() {
   history.replaceState(null, '', location.pathname + encodeTrip(currentTrip()));
   shareBtn.hidden = false;
-}
-
-async function nameRoutePoints(runId) {
-  const { samples } = state.plan;
-  for (let i = 0; i < samples.length; i++) {
-    if (runId !== state.runId) return;
-    if (samples[i].kind !== 'route') continue;
-    try {
-      const name = await placeNameAt(samples[i].lat, samples[i].lon);
-      if (runId !== state.runId) return;
-      if (name) { samples[i].name = name; timeline.setName(i, state.plan, state.units); }
-    } catch { /* names are a nice-to-have */ }
-    await new Promise((r) => setTimeout(r, 200)); // be gentle with the free service
-  }
 }
 
 async function run() {
@@ -155,7 +133,6 @@ async function run() {
     renderResults();
     updateUrl();
     setStatus(departMs < Date.now() ? 'That departure time has already passed, so some points may have no forecast.' : '');
-    nameRoutePoints(runId);
   } catch (e) {
     console.error(e);
     if (runId === state.runId) setStatus(e.message || 'Something went wrong.', true);
