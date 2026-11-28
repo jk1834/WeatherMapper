@@ -14,7 +14,6 @@ See the weather along a road trip at the time you'll actually be at each point, 
 - **Trips already under way.** Points you've already passed show the weather from that hour, so the map stays useful while you drive.
 - **Share a trip with a link.** The whole trip is stored in the link, so anyone who opens it sees the same route with up-to-date weather. Bookmark a link to save a trip.
 - **°F or °C**, with wind in mph or km/h to match.
-- **No account, no API keys, no ads.** It's a static page that talks directly to free public services.
 
 ## How to use it
 
