@@ -10,10 +10,10 @@ export const CONFIG = {
   // Photon (by komoot) for place search and "nearest town" names.
   geocoder: 'https://photon.komoot.io',
 
-  // Open-Meteo weather.
+  // Open-Meteo weather. The service gives hourly data from up to 92 days ago to 16 days ahead.
   forecastUrl: 'https://api.open-meteo.com/v1/forecast',
-  archiveUrl: 'https://archive-api.open-meteo.com/v1/archive',
   forecastDays: 16,
+  maxPastDays: 92,
 
   // Map tiles.
   tileUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',

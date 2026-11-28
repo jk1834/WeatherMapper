@@ -7,7 +7,8 @@ import { PlaceField } from './placeField.js';
 import { getRoute } from './routing.js';
 import { planSamples } from './sampling.js';
 import { decodeTrip, encodeTrip } from './tripUrl.js';
-import { getWeather } from './weather.js';
+import { dateLabel } from './format.js';
+import { forecastAvailableFrom, getWeather } from './weather.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -83,7 +84,35 @@ document.querySelectorAll('.units .seg').forEach((b) => b.addEventListener('clic
 
 // ---- Run ----
 function renderResults() {
-  mapView.showSamples(state.plan.samples, state.weather, state.units, (i) => mapView.focus(i));
+  mapView.showSamples(state.plan.samples, state.weather, state.units, nameOnOpen);
+}
+
+// Route points get their nearest town looked up the first time their pin is opened,
+// one lookup per tap, to go easy on the free place-search service.
+function nameOnOpen(i, refresh) {
+  const runId = state.runId;
+  const s = state.plan.samples[i];
+  if (s.kind !== 'route' || s.name || s.naming) return;
+  s.naming = true;
+  placeNameAt(s.lat, s.lon)
+    .then((name) => {
+      if (runId !== state.runId || !name) return;
+      s.name = name;
+      refresh();
+    })
+    .catch(() => { /* the popup just says "Along the route" */ })
+    .finally(() => { s.naming = false; });
+}
+
+// A note under the button when part of the trip is past the forecast window.
+function forecastNote(samples, weather) {
+  const later = samples.filter((s, i) => weather[i].type === 'none' && weather[i].reason === 'future');
+  if (!later.length) return '';
+  const from = dateLabel(forecastAvailableFrom(Math.min(...later.map((s) => s.time))));
+  if (later.length === samples.length) {
+    return `This trip is too far away for a forecast. Check back around ${from}.`;
+  }
+  return `Points marked ✕ are past the ${CONFIG.forecastDays}-day forecast. Check back around ${from} for those.`;
 }
 
 function currentTrip() {
@@ -132,7 +161,7 @@ async function run() {
     state.weather = weather;
     renderResults();
     updateUrl();
-    setStatus(departMs < Date.now() ? 'That departure time has already passed, so some points may have no forecast.' : '');
+    setStatus(forecastNote(plan.samples, weather));
   } catch (e) {
     console.error(e);
     if (runId === state.runId) setStatus(e.message || 'Something went wrong.', true);

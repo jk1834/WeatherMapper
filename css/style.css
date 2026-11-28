@@ -98,8 +98,17 @@ button.locate { white-space: nowrap; }
 .wx-pin b { font-size: 12px; }
 .wx-pin.start, .wx-pin.end { border-color: var(--accent); }
 .wx-pin.stop, .wx-pin.leave { border-color: #7c3aed; }
-.wx-pin.lastyear { border-style: dashed; }
+.wx-pin.none { border-color: var(--bad); padding: 1px 6px; }
+.wx-pin.none .x { color: var(--bad); font-weight: 700; font-size: 13px; }
+.wx-pin-wrap { cursor: pointer; }
 .selected .wx-pin { outline: 3px solid var(--accent); }
+
+/* ---- Pin popup ---- */
+.wx-popup { font-size: 14px; line-height: 1.4; }
+.wx-popup-title { font-weight: 700; }
+.wx-popup-when { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+.wx-popup p { margin: 4px 0 0; }
+.wx-popup-warn { color: var(--bad); font-weight: 600; }
 
 .credits { font-size: 12px; color: var(--muted); padding: 8px 16px; text-align: center; }
 .credits a { color: inherit; }

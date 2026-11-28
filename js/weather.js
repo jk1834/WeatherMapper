@@ -1,8 +1,10 @@
 // Weather for each sample point at the time you'll be there, from Open-Meteo.
-// Within 16 days: the hourly forecast. Further out: last year's weather on that date
-// (clearly labelled as not a forecast).
+// The service covers roughly the last 92 days up to 16 days ahead, so a trip already
+// under way still shows the weather on stretches you've passed. Points outside that
+// window come back as { type: 'none', reason: 'future' | 'past' }.
 import { CONFIG } from './config.js';
 
+const DAY = 86400e3;
 const round = (x) => Math.round(x * 1000) / 1000;
 
 async function fetchMulti(url, samples, params) {
@@ -25,79 +27,45 @@ function nearestHour(times, tSec) {
   return Math.min(times.length - 1, Math.max(0, Math.round((tSec - times[0]) / 3600)));
 }
 
-function isoDate(ms, tz) {
-  try {
-    return new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(ms);
-  } catch {
-    return new Date(ms).toISOString().slice(0, 10);
-  }
-}
-
-function lastYear(date) {
-  const [y, m, d] = date.split('-');
-  const md = m === '02' && d === '29' ? '02-28' : `${m}-${d}`;
-  return `${Number(y) - 1}-${md}`;
+// Earliest date a point's hour will be inside the forecast (forecast_days counts today).
+export function forecastAvailableFrom(ms) {
+  return ms - (CONFIG.forecastDays - 1) * DAY;
 }
 
 export async function getWeather(samples) {
-  const out = samples.map(() => ({ type: 'none', tz: null }));
+  const now = Date.now();
+  const earliest = Math.min(...samples.map((s) => s.time));
+  // Ask for just enough history to cover the part of the trip that's already happened.
+  const pastDays = Math.min(CONFIG.maxPastDays, Math.max(1, Math.ceil((now - earliest) / DAY) + 1));
 
   const fc = await fetchMulti(CONFIG.forecastUrl, samples, {
-    hourly: 'temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m,wind_gusts_10m',
+    hourly: 'temperature_2m,apparent_temperature,precipitation_probability,precipitation,snowfall,weather_code,wind_speed_10m,wind_gusts_10m',
     forecast_days: String(CONFIG.forecastDays),
-    past_days: '1',
+    past_days: String(pastDays),
     timezone: 'auto',
     timeformat: 'unixtime',
   });
 
-  samples.forEach((s, i) => {
+  return samples.map((s, i) => {
     const loc = fc[i] || fc[0];
-    out[i].tz = loc.timezone || null;
+    const tz = loc.timezone || null;
     const h = loc.hourly;
     const idx = nearestHour(h?.time, s.time / 1000);
-    if (idx < 0 || h.temperature_2m[idx] == null) return;
-    out[i] = {
+    if (idx < 0 || h.temperature_2m[idx] == null) {
+      return { type: 'none', tz, reason: s.time > now ? 'future' : 'past' };
+    }
+    return {
       type: 'forecast',
-      tz: loc.timezone || null,
+      tz,
+      past: s.time < now,
       tempC: h.temperature_2m[idx],
+      feelsC: h.apparent_temperature?.[idx] ?? null,
       precipProb: h.precipitation_probability?.[idx] ?? null,
       precipMm: h.precipitation?.[idx] ?? 0,
+      snowCm: h.snowfall?.[idx] ?? 0,
       code: h.weather_code?.[idx],
       windKmh: h.wind_speed_10m?.[idx] ?? null,
       gustKmh: h.wind_gusts_10m?.[idx] ?? null,
     };
   });
-
-  // Too far out for a forecast: fall back to the same date last year.
-  const missing = samples.map((s, i) => i).filter((i) => out[i].type === 'none' && samples[i].time > Date.now());
-  if (missing.length) {
-    try {
-      const dates = missing.map((i) => lastYear(isoDate(samples[i].time, out[i].tz || undefined)));
-      const sorted = [...dates].sort();
-      const arc = await fetchMulti(CONFIG.archiveUrl, missing.map((i) => samples[i]), {
-        daily: 'temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code',
-        start_date: sorted[0],
-        end_date: sorted[sorted.length - 1],
-        timezone: 'auto',
-      });
-      missing.forEach((i, j) => {
-        const loc = arc[j] || arc[0];
-        const k = loc.daily?.time?.indexOf(dates[j]) ?? -1;
-        if (k < 0) return;
-        out[i] = {
-          type: 'lastyear',
-          tz: out[i].tz || loc.timezone || null,
-          date: dates[j],
-          maxC: loc.daily.temperature_2m_max[k],
-          minC: loc.daily.temperature_2m_min[k],
-          precipMm: loc.daily.precipitation_sum[k] ?? 0,
-          code: loc.daily.weather_code[k],
-        };
-      });
-    } catch (e) {
-      console.warn('Historical lookup failed', e);
-    }
-  }
-
-  return out;
 }
