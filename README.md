@@ -1,14 +1,9 @@
 # Weather Mapper
 
 Shows the weather along a driving route at the time you'll actually be at each point.
-It's a static site, so it runs on GitHub Pages with no server, accounts, API keys or card.
 
-## Put it on GitHub Pages
 This repo (`jk1834/WeatherMapper`) is served at **https://jk1834.github.io/WeatherMapper/**.
-If Pages ever needs turning back on: **Settings → Pages**, set **Source** to "Deploy from a branch",
-choose `main` and `/ (root)`, and save. Changes show up a minute or so after you push.
 
-## Using it
 - Type a start and a destination (pick from the suggestions, or just type and press **Check weather**).
 - **+ Add a stop** for places along the way. "h stay" is how long you'll be there; use something
   like 12 for an overnight stop and the next day's driving is timed correctly.
@@ -24,7 +19,7 @@ choose `main` and `/ (root)`, and save. Changes show up a minute or so after you
 - Drive times come from the routing service and assume no traffic or breaks.
 
 ## Test it on your computer
-ES modules don't load from `file://`, so run a tiny local server from this folder:
+Run a tiny local server from this folder:
 ```
 python3 -m http.server 8000
 ```
@@ -46,11 +41,8 @@ js/tripUrl.js       saves/loads the trip in the link
 js/format.js        weather icons and temperature
 ```
 
-## Services used (all free, no key)
+## Services used (all free)
 - Map tiles: OpenStreetMap
 - Routing: OSRM servers at routing.openstreetmap.de, falling back to router.project-osrm.org
 - Place search: Photon (komoot)
 - Weather: Open-Meteo (free for non-commercial use, attribution in the footer)
-
-These are community services meant for light use, which a family tool is.
-Keep the attribution footer in place.
